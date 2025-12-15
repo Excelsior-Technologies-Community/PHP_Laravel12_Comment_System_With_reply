@@ -1,59 +1,292 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Laravel Comment System with Nested Replies
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A complete Laravel 12 application featuring a threaded comment system with infinite nesting capabilities. This project demonstrates hierarchical data relationships, user authentication, and modern Laravel best practices.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Features
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+* Hierarchical Comment System with unlimited nested replies
+* User Authentication with secure login and registration
+* CRUD Operations for comments (create, read, delete)
+* Real-time UI using Bootstrap modal for replies without page reload
+* Responsive and mobile-friendly interface
+* Authorization rules to ensure users can delete only their own comments
+* Clean and maintainable Laravel architecture
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## Prerequisites
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+* PHP 8.1 or higher
+* Composer
+* MySQL 5.7 or higher
+* Node.js and NPM (for frontend assets)
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-## Laravel Sponsors
+## Installation
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### 1. Clone the Repository
 
-### Premium Partners
+```bash
+git clone https://github.com/yourusername/laravel-comment-system.git
+cd laravel-comment-system
+```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### 2. Install Dependencies
 
-## Contributing
+```bash
+composer install
+npm install && npm run build
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 3. Configure Environment
 
-## Code of Conduct
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Update your `.env` file with database credentials:
 
-## Security Vulnerabilities
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=laravel_comment_system
+DB_USERNAME=root
+DB_PASSWORD=your_password
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### 4. Run Migrations and Seeders
+
+```bash
+php artisan migrate
+php artisan db:seed
+```
+
+### 5. Run Development Server
+
+```bash
+php artisan serve
+```
+
+Visit: [http://localhost:8000](http://localhost:8000)
+
+---
+
+## Project Structure
+
+```
+laravel-comment-system/
+├── app/
+│   ├── Http/
+│   │   └── Controllers/
+│   │       ├── CommentController.php
+│   │       └── HomeController.php
+│   └── Models/
+│       └── Comment.php
+├── database/
+│   ├── migrations/
+│   │   └── create_comments_table.php
+│   └── seeders/
+│       └── DatabaseSeeder.php
+├── resources/
+│   └── views/
+│       ├── home.blade.php
+│       └── partials/
+│           └── comment.blade.php
+├── routes/
+│   └── web.php
+└── README.md
+```
+
+---
+
+## Database Schema
+
+### Comments Table
+
+```sql
+CREATE TABLE comments (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    parent_id INT NULL,
+    body TEXT NOT NULL,
+    created_at TIMESTAMP,
+    updated_at TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (parent_id) REFERENCES comments(id) ON DELETE CASCADE
+);
+```
+
+---
+
+## API Endpoints
+
+| Method | Endpoint             | Description          |
+| ------ | -------------------- | -------------------- |
+| GET    | /                    | Display all comments |
+| POST   | /comments            | Store a new comment  |
+| POST   | /comments/{id}/reply | Reply to a comment   |
+| DELETE | /comments/{id}       | Delete a comment     |
+
+---
+
+## Testing Account
+
+Default seeded user:
+
+* Email: [test@example.com](mailto:test@example.com)
+* Password: password
+
+---
+
+## Key Concepts Implemented
+
+### 1. Recursive Relationships
+
+* Comments support parent-child relationships
+* Self-referential relationship defined in the Comment model
+
+### 2. Eager Loading
+
+* Optimized database queries using `with()`
+* Efficient loading of user and reply relationships
+
+### 3. Blade Templates
+
+* Reusable comment partials
+* Recursive Blade rendering for nested replies
+
+### 4. Authorization
+
+* Middleware-protected routes
+* Users can delete only their own comments
+
+---
+
+## Customization
+
+### Change Maximum Reply Depth
+
+Edit `HomeController.php`:
+
+```php
+$comments = Comment::whereNull('parent_id')
+    ->with(['user', 'replies.user', 'replies.replies.user'])
+    ->get();
+```
+
+### Add Comment Validation Rules
+
+Modify validation in `CommentController.php`:
+
+```php
+$request->validate([
+    'body' => 'required|string|min:3|max:2000',
+]);
+```
+
+### Change Comment Sorting
+
+```php
+// Oldest first
+->orderBy('created_at', 'asc')
+
+// Most replies first
+->withCount('replies')->orderBy('replies_count', 'desc')
+```
+
+---
+
+## Troubleshooting
+
+### Common Issues
+
+* **Class 'Comment' not found**
+
+  * Run `composer dump-autoload`
+  * Verify namespace in the Comment model
+
+* **Database connection error**
+
+  * Check `.env` credentials
+  * Ensure MySQL service is running
+
+* **CSS or JS not loading**
+
+  * Run `npm run build`
+  * Check public directory permissions
+
+* **Authentication issues**
+
+  * Run `php artisan cache:clear`
+  * Clear browser cookies
+
+---
+
+## Performance Considerations
+
+* Prevents N+1 queries using eager loading
+* Add database indexes for optimization:
+
+```php
+$table->index(['parent_id', 'created_at']);
+```
+
+* Use pagination for large datasets:
+
+```php
+$comments = Comment::whereNull('parent_id')->paginate(20);
+```
+
+---
+
+## Deployment
+
+### Production Configuration
+
+```bash
+APP_ENV=production
+APP_DEBUG=false
+```
+
+### Optimize Application
+
+```bash
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+```
+
+### Optional Queue Setup
+
+* Configure queues for email notifications
+* Use Supervisor to manage queue workers
+
+---
+
+## Maintenance
+
+### Clear Cache
+
+```bash
+php artisan cache:clear
+php artisan view:clear
+php artisan route:clear
+php artisan config:clear
+```
+
+### Reset Database
+
+```bash
+php artisan migrate:fresh --seed
+```
+
+---
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is open-source and available under the MIT License.
