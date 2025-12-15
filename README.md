@@ -1,4 +1,4 @@
-# Laravel Comment System with Nested Replies
+# PHP_Laravel12_Comment_System_With_reply
 
 A complete Laravel 12 application featuring a threaded comment system with infinite nesting capabilities. This project demonstrates hierarchical data relationships, user authentication, and modern Laravel best practices.
 
