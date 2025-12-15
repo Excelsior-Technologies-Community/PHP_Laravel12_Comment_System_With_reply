@@ -25,6 +25,12 @@ A complete Laravel 12 application featuring a threaded comment system with infin
 
 ---
 
+## Screenshot
+
+<img width="1326" height="970" alt="image" src="https://github.com/user-attachments/assets/8f0b33ea-6a9b-45bb-ae0a-6f45e6560592" />
+
+
+
 ## Installation
 
 ### 1. Clone the Repository
