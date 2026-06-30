@@ -4,6 +4,7 @@
             <div class="d-flex justify-content-between">
                 <h6 class="card-subtitle mb-2 text-muted">
                     {{ $comment->user->name }}
+                    
                     <small class="text-muted">• {{ $comment->created_at->diffForHumans() }}</small>
                 </h6>
                 
