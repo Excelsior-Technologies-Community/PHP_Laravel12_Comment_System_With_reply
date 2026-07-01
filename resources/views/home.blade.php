@@ -23,6 +23,43 @@
             border-left: 2px solid #eee;
             padding-left: 15px;
         }
+
+        .avatar {
+
+            width: 45px;
+            height: 45px;
+
+            border-radius: 50%;
+
+            background: #0d6efd;
+
+            color: white;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-weight: bold;
+
+        }
+
+        .comment-wrapper {
+
+            position: relative;
+
+        }
+
+        .reply-container {
+
+            margin-left: 50px;
+
+            border-left: 3px solid #e9ecef;
+
+            padding-left: 20px;
+
+        }
     </style>
 </head>
 
@@ -31,20 +68,45 @@
         <div class="row justify-content-center">
             <div class="col-md-12">
                 <div class="card">
-                    <div class="card-header">
-                        <h3>Laravel Comment System with Replies</h3>
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h3 class="mb-0">Laravel Comment System with Replies</h3>
+
+                        @auth
+                        <div class="d-flex align-items-center">
+                            <span class="me-3">
+                                Welcome, <strong>{{ Auth::user()->name }}</strong>
+                            </span>
+
+                            <form action="{{ route('logout') }}" method="POST">
+                                @csrf
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    Logout
+                                </button>
+                            </form>
+                        </div>
+                        @else
+                        <div>
+                            <a href="{{ route('login') }}" class="btn btn-primary btn-sm me-2">
+                                Login
+                            </a>
+
+                            <a href="{{ route('register') }}" class="btn btn-success btn-sm">
+                                Register
+                            </a>
+                        </div>
+                        @endauth
                     </div>
 
                     @if(session('success'))
-                        <div class="alert alert-success m-3">
-                            {{ session('success') }}
-                        </div>
+                    <div class="alert alert-success m-3">
+                        {{ session('success') }}
+                    </div>
                     @endif
 
                     @if(session('error'))
-                        <div class="alert alert-danger m-3">
-                            {{ session('error') }}
-                        </div>
+                    <div class="alert alert-danger m-3">
+                        {{ session('error') }}
+                    </div>
                     @endif
 
 
@@ -92,19 +154,19 @@
                         </div>
 
                         @auth
-                            <!-- Add Comment Form -->
-                            <form action="{{ route('comments.store') }}" method="POST" class="mb-4">
-                                @csrf
-                                <div class="mb-3">
-                                    <label for="body" class="form-label">Add a comment:</label>
-                                    <textarea class="form-control" id="body" name="body" rows="3" required></textarea>
-                                </div>
-                                <button type="submit" class="btn btn-primary">Post Comment</button>
-                            </form>
-                        @else
-                            <div class="alert alert-info">
-                                Please <a href="{{ route('login') }}">login</a> to post comments.
+                        <!-- Add Comment Form -->
+                        <form action="{{ route('comments.store') }}" method="POST" class="mb-4">
+                            @csrf
+                            <div class="mb-3">
+                                <label for="body" class="form-label">Add a comment:</label>
+                                <textarea class="form-control" id="body" name="body" rows="3" required></textarea>
                             </div>
+                            <button type="submit" class="btn btn-primary">Post Comment</button>
+                        </form>
+                        @else
+                        <div class="alert alert-info">
+                            Please <a href="{{ route('login') }}">login</a> to post comments.
+                        </div>
                         @endauth
 
                         <hr>
@@ -164,11 +226,11 @@
                         </h4>
 
                         @if($comments->isEmpty())
-                            <p class="text-muted">No comments yet. Be the first to comment!</p>
+                        <p class="text-muted">No comments yet. Be the first to comment!</p>
                         @else
-                            @foreach($comments as $comment)
-                                @include('partials.comment', ['comment' => $comment, 'depth' => 0])
-                            @endforeach
+                        @foreach($comments as $comment)
+                        @include('partials.comment', ['comment' => $comment, 'depth' => 0])
+                        @endforeach
                         @endif
 
                         <div class="mt-4 d-flex justify-content-center">
@@ -206,12 +268,87 @@
         </div>
     </div>
 
+    <div class="modal fade" id="editModal" tabindex="-1">
+
+        <div class="modal-dialog">
+
+            <div class="modal-content">
+
+                <form
+                    id="editForm"
+                    method="POST">
+
+                    @csrf
+                    @method('PUT')
+
+                    <div class="modal-header">
+
+                        <h5>Edit Comment</h5>
+
+                        <button
+                            class="btn-close"
+                            data-bs-dismiss="modal">
+                        </button>
+
+                    </div>
+
+                    <div class="modal-body">
+
+                        <textarea
+                            class="form-control"
+                            id="editBody"
+                            name="body"
+                            rows="4"
+                            required></textarea>
+
+                    </div>
+
+                    <div class="modal-footer">
+
+                        <button
+                            class="btn btn-secondary"
+                            data-bs-dismiss="modal">
+
+                            Cancel
+
+                        </button>
+
+                        <button
+                            class="btn btn-primary">
+
+                            Update
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         function showReplyModal(commentId) {
             const form = document.getElementById('replyForm');
             form.action = `/comments/${commentId}/reply`;
             new bootstrap.Modal(document.getElementById('replyModal')).show();
+        }
+
+        function showEditModal(id, body) {
+
+            document.getElementById('editBody').value = body;
+
+            document.getElementById('editForm').action =
+                "/comments/" + id;
+
+            new bootstrap.Modal(
+                document.getElementById('editModal')
+            ).show();
+
         }
     </script>
 </body>

@@ -13,8 +13,11 @@ class HomeController extends Controller
         $query = Comment::whereNull('parent_id')
             ->with([
                 'user',
+                'likes',
                 'replies.user',
-                'replies.replies.user'
+                'replies.likes',
+                'replies.replies.user',
+                'replies.replies.likes'
             ]);
 
         // Search
@@ -26,18 +29,15 @@ class HomeController extends Controller
         if ($request->filter == 'oldest') {
 
             $query->oldest();
-
         } elseif ($request->filter == 'today') {
 
             $query->whereDate('created_at', today())
                 ->latest();
-
         } else {
 
-            $query->oldest();
-
+            // Default newest
+            $query->latest();
         }
-
         // Pagination
         $comments = $query
             ->paginate(3)
